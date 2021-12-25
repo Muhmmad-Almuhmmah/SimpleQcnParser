@@ -22,7 +22,7 @@ typedef struct _nv_item_{
         buffer=buff;
         //        qDebug() <<"Add "<<id<<offset<<buffer.mid(0,30)<<buffer.length()<<endl<<endl;
     }
-    int id;
+    uint id;
     int offset;
     QByteArray buffer;
 }nvItem;
@@ -41,14 +41,12 @@ public:
     ~MainWindow();
     bool ReadFile(const QString &file,QByteArray &buffer);
     bool WriteFile(const QString &file,const QByteArray &buffer);
-
+    QByteArray GetHandle(const uint32_t &item);
     bool ParserBuffer(QByteArray &buffer);
     bool PatchBuffer(QByteArray &buffer);
-    void showMsg(QString title,QString Msg,bool error=false);
+    void showMsg(QString Msg);
 private slots:
-    void on_btn_LoadFile_clicked();
-
-    void on_btnWriteFile_clicked();
+    void UserBtns();
 
 private:
     Ui::MainWindow *ui;

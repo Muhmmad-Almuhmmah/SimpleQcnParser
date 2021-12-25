@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
     label.setText(HDR_MSG.arg("Simple Qcn Parser"));
     label.show();
     label.setOpenExternalLinks(true);
+    connect(ui->btn_LoadFile,SIGNAL(clicked()),this,SLOT(UserBtns()));
+    connect(ui->btnWriteFile,SIGNAL(clicked()),this,SLOT(UserBtns()));
 }
 
 MainWindow::~MainWindow()
@@ -37,7 +39,7 @@ bool MainWindow::ReadFile(const QString &file, QByteArray &buffer)
     if(_read.open(QIODevice::ReadOnly))
         buffer=_read.readAll();
     else{
-        showMsg("Fail Read File",_read.errorString(),true);
+        showMsg(_read.errorString());
     }
     return !buffer.isEmpty();
 }
@@ -50,9 +52,17 @@ bool MainWindow::WriteFile(const QString &file, const QByteArray &buffer)
         _write.close();
         return true;
     }else{
-        showMsg("Fail Write File",_write.errorString(),true);
+        showMsg(_write.errorString());
     }
     return false;
+}
+
+QByteArray MainWindow::GetHandle(const uint32_t &item)
+{
+    QByteArray qcHandle;
+    qcHandle=QByteArray::fromRawData(reinterpret_cast<const char*>(&item),sizeof(item));
+    qcHandle.prepend(QByteArray::fromHex(handle.toLatin1()));
+    return qcHandle;
 }
 
 bool MainWindow::ParserBuffer(QByteArray &buffer)
@@ -67,9 +77,10 @@ bool MainWindow::ParserBuffer(QByteArray &buffer)
     QByteArray qcHandle,nvData;
     int32_t offset;
     foreach(uint32_t idNV,ids){
-        qcHandle=QByteArray::fromRawData(reinterpret_cast<const char*>(&idNV),sizeof(idNV));
-        qcHandle.prepend(QByteArray::fromHex(handle.toLatin1()));
-        //qDebug() <<idNV<<qcHandle<<qcHandle.toHex();
+        //        qcHandle=QByteArray::fromRawData(reinterpret_cast<const char*>(&idNV),sizeof(idNV));
+        //        qcHandle.prepend(QByteArray::fromHex(handle.toLatin1()));
+        qcHandle=GetHandle(idNV);
+        qDebug() <<idNV<<qcHandle<<qcHandle.toHex();
         offset=buffer.indexOf(qcHandle);
         if(offset){
             nvItems.append(nvItem(idNV,offset,buffer.mid(offset+8,128)));
@@ -93,9 +104,9 @@ bool MainWindow::ParserBuffer(QByteArray &buffer)
     if(ui->lineESN->text().isEmpty() && ui->lineIMEI->text().isEmpty() &&
             ui->lineMEID->text().isEmpty() && ui->lineSPC->text().isEmpty())
     {
-        showMsg("Error Parser","Fail Parser QCN File!",true);
+        showMsg("Fail Parser QCN File!");
     }else{
-        showMsg("Parser","Parser QCN Success");
+        showMsg("Parser QCN Success");
         ui->btnWriteFile->setEnabled(1);
         currentLen=buffer.length();
     }
@@ -107,7 +118,7 @@ bool MainWindow::PatchBuffer(QByteArray &buffer)
     bool state=false;
     QString error;
     foreach(nvItem item,nvItems){
-        QByteArray patch;
+        QByteArray patch,currentItem;
         QString value;
         qDebug() <<item.id<<item.buffer.toHex();
         if(!item.id){
@@ -145,65 +156,66 @@ bool MainWindow::PatchBuffer(QByteArray &buffer)
             QC_Calculator::WritableMEID(value,patch);
         }
         if(patch.length()){
-            patch.append(QByteArray().fill(0x00,(128-patch.length())));
-            qDebug() <<"patch"<<patch.toHex();
-            buffer.replace(item.buffer,patch);
+            patch.prepend(GetHandle(item.id));
+            patch.append(QByteArray().fill(0x00,(136-patch.length())));
+            currentItem=GetHandle(item.id);
+            currentItem.append(item.buffer);
+            qDebug() <<patch.length()<<"patch"<<patch.toHex();
+            qDebug() <<currentItem.length()<<"currentItem"<<currentItem.toHex();
+            buffer.replace(currentItem,patch);
             state=true;
         }
     }
     if(!error.isEmpty())
     {
-        showMsg("Inupt Error",error);
+        showMsg(error);
         return false;
     }
     if(!state){
-        showMsg("Error","Fail Patch data");
+        showMsg("Fail Patch data");
         return false;
     }
     return true;
 }
 
-void MainWindow::showMsg(QString title, QString Msg, bool error)
+void MainWindow::showMsg(QString Msg)
 {
     QApplication::beep();
     label.setText(HDR_MSG.arg(Msg));
-    //    QMessageBox box(this);
-    //    box.setWindowTitle(title);
-    //    box.setIcon(error?QMessageBox::Warning:QMessageBox::Information);
-    //    box.setText(Msg);
-    //    box.exec();
-    //    ui->statusbar->showMessage(QString("%1").arg(Msg),5000);
 }
 
-void MainWindow::on_btn_LoadFile_clicked()
+void MainWindow::UserBtns()
 {
-    QString file=QFileDialog::getOpenFileName(this,"Select QCN File","","Qcn File(*.qcn)");
-    if(file.isEmpty())
-        return;
-    if(!ReadFile(file,buffer))
-        return;
-    if(ParserBuffer(buffer))
-        ui->lineQcFile->setText(file);
+    setEnabled(false);
+    QPushButton *pButton = qobject_cast<QPushButton *>(sender());
+    qDebug() <<"sender"<<sender();
+    if(pButton==ui->btn_LoadFile){
+        QString file=QFileDialog::getOpenFileName(this,"Select QCN File","","Qcn File(*.qcn)");
+        if(!file.isEmpty()){
+            if(ReadFile(file,buffer)){
+                if(ParserBuffer(buffer))
+                    ui->lineQcFile->setText(file);
+            }
+        }
 
-}
-
-void MainWindow::on_btnWriteFile_clicked()
-{
-    QString file=QFileDialog::getSaveFileName(this,"Select Save File Name","","Qcn File(*.qcn)");
-    if(file.isEmpty())
-        return;
-    if(buffer.isEmpty()){
-        showMsg("","Load QCN File First !",true);
-        return;
+    }else if(pButton==ui->btnWriteFile){
+        QString file=QFileDialog::getSaveFileName(this,"Select Save File Name","","Qcn File(*.qcn)");
+        if(!file.isEmpty()){
+            if(!buffer.isEmpty()){
+                if(PatchBuffer(buffer))
+                {
+                    if(currentLen==buffer.length()){
+                        if(WriteFile(file,buffer))
+                            showMsg("Success Write Patch Data");
+                    }else{
+                        qDebug() <<currentLen<<buffer.length();
+                        showMsg("Fail Detect Current Length File");
+                    }
+                }
+            }else{
+                showMsg("Load QCN File First !");
+            }
+        }
     }
-    if(!PatchBuffer(buffer))
-    {
-        return;
-    }
-    if(currentLen!=buffer.length()){
-        showMsg("Error","Fail Detect Current Length File");
-        return;
-    }
-    if(WriteFile(file,buffer))
-        showMsg("","Succecc Write Patch Data");
+    setEnabled(true);
 }
