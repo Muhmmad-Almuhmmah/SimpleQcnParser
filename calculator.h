@@ -105,6 +105,74 @@ public:
         return true;
     }
 
+    static uint32_t ConvertMin1(BYTE *buff){
+        QByteArray a,v;
+        for(int i=7;i>3;i--)
+        {
+            v=QByteArray((const char*)&buff[i],1).toHex();
+            //        QD(v);
+            if(i==7 and v=="00")
+                continue;
+            if(v.at(0)=='0' and v!="00")
+                v.remove(0,1);
+            a.append(v);
+        }
+        unsigned int newUint = std::stoul(a.toStdString(), nullptr, 16);
+        return newUint;
+    }
+
+    static uint16_t ConvertMin2(BYTE *buff){
+        QByteArray a,v;
+        for(int i=7;i>5;i--)
+        {
+            v=QByteArray((const char*)&buff[i],1).toHex();
+            //        QD(v);
+            if(i==7 and v=="00")
+                continue;
+            if(v.at(0)=='0' and v!="00")
+                v.remove(0,1);
+            a.append(v);
+        }
+        unsigned int newUint = std::stoul(a.toStdString(), nullptr, 16);
+        return newUint;
+    }
+
+
+    static QString DecodeMIN(uint min1, uint min2){
+        uint min1a=0,min1b=0,min1c=0,min1c_5b=0,min1c_5c=0,min1c_5d=0;
+        min2 = (min2 + 1) % 10 + (((((min2 % 100)/10) + 1) % 10) * 10) + ((((min2 / 100) + 1) % 10) * 100);
+        min1a = (min1 & 0xFFC000) >> 14;
+        min1a = (min1a + 1) % 10 + (((((min1a % 100) / 10) + 1) % 10) * 10) + ((((min1a / 100) + 1) % 10) * 100);
+        min1b = ((min1 & 0x3C00) >> 10) % 10;
+        min1c = (min1 & 0x3FF);
+        min1c_5b = (min1c + 1) % 10;
+        min1c_5c = (((((min1c % 100) / 10) + 1) % 10) * 10);
+        min1c_5d = ((((min1c / 100) + 1) % 10) * 100);
+        min1c = min1c_5b + min1c_5c + min1c_5d;
+        return QString::number(min2)+QString::number(min1a)+QString::number(min1b)+QString::number(min1c);
+    }
+
+    bool EncodeMIN(const QString &MinString, QString &Min1, QString &Min2){
+        if(MinString.isEmpty())
+            return false;
+        uint16_t min2=(((byte)_strtoui64(MinString.mid(0,1).toLatin1().data(),NULL,16)+9)%10)*100+(((byte)_strtoui64(MinString.mid(1,1).toLatin1().data(),NULL,16)+9)%10)*10+(((byte)_strtoui64(MinString.mid(2,1).toLatin1().data(),NULL,16)+9) %10 );
+
+        DWORD min1a=(((byte)_strtoui64(MinString.mid(3,1).toLatin1().data(),NULL,16)+9)%10)*100+(((byte)_strtoui64(MinString.mid(4,1).toLatin1().data(),NULL,16)+9)%10)*10+(((byte)_strtoui64(MinString.mid(5,1).toLatin1().data(),NULL,16)+9)%10);
+
+        DWORD min1b=(byte)_strtoui64(MinString.mid(6,1).toLatin1().data(),NULL,16);
+
+        if(min1b==0)
+            min1b=1;
+
+        DWORD min1c=(((byte)_strtoui64(MinString.mid(7,1).toLatin1().data(),NULL,16)+9)%10)*100+(((byte)_strtoui64(MinString.mid(8,1).toLatin1().data(),NULL,16)+9)%10)*10+(((byte)_strtoui64(MinString.mid(9,1).toLatin1().data(),NULL,16)+9) % 10);
+
+        uint32_t min1=min1c+(min1b<<10)+(min1a<<14);
+
+        Min1=QByteArray((const char*)&min1,sizeof(min1)).toHex();
+        Min2=QByteArray((const char*)&min2,sizeof(min2)).toHex();
+        return Min2.length()>0 and Min2.length()>0;
+    }
+
 };
 
 #endif // QC_CALCULATOR_H

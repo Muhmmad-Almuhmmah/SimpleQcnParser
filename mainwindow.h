@@ -34,19 +34,24 @@ class MainWindow : public QMainWindow
     QList<uint32_t>ids;
     QString handle="88 00 01 00 ";
     QByteArray buffer;
-    int currentLen=0;
+    QString stringMin,Banner;
+    int currentLen=0,rmItems;
     QLabel label;
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void RmOptions(bool show);
     bool ReadFile(const QString &file,QByteArray &buffer);
     bool WriteFile(const QString &file,const QByteArray &buffer);
     QByteArray GetHandle(const uint32_t &item);
     bool ParserBuffer(QByteArray &buffer);
     bool PatchBuffer(QByteArray &buffer);
     void showMsg(QString Msg);
+    void UpdateTitle();
 private slots:
     void UserBtns();
+
+    void on_ch_SensitiveItems_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;

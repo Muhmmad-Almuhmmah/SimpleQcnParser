@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>524</width>
-    <height>223</height>
+    <width>584</width>
+    <height>242</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Simple QCN Patcher v1.1</string>
+   <string>Simple QCN Patcher v1.2</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -82,16 +82,35 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="0">
+    <item row="2" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
+         <widget class="QCheckBox" name="ch_ESN">
+          <property name="maximumSize">
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="labelESN">
           <property name="minimumSize">
            <size>
-            <width>50</width>
+            <width>35</width>
             <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>35</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="font">
@@ -104,7 +123,7 @@
            <string>ESN</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -132,11 +151,33 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
+         <widget class="QCheckBox" name="ch_SPC">
+          <property name="maximumSize">
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="labelSPC">
           <property name="minimumSize">
            <size>
-            <width>50</width>
+            <width>35</width>
             <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>35</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="font">
@@ -149,7 +190,7 @@
            <string>SPC</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -177,11 +218,30 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
+         <widget class="QCheckBox" name="ch_IMEI">
+          <property name="maximumSize">
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="labelIMEI">
           <property name="minimumSize">
            <size>
-            <width>50</width>
+            <width>35</width>
             <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>35</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="font">
@@ -194,7 +254,7 @@
            <string>IMEI</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -222,11 +282,30 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
+         <widget class="QCheckBox" name="ch_MEID">
+          <property name="maximumSize">
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="labelMEID">
           <property name="minimumSize">
            <size>
-            <width>50</width>
+            <width>35</width>
             <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>35</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="font">
@@ -239,7 +318,7 @@
            <string>MEID</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -268,6 +347,13 @@
        </layout>
       </item>
      </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QCheckBox" name="ch_SensitiveItems">
+      <property name="text">
+       <string>Remove Sensitive [IMEI/MEID/ESN]</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
