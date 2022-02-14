@@ -10,7 +10,7 @@ What's new in v1.0.2
 - remove sensitive nv items [imei/mied/esn/spc] safe
 - add uncode/decode min1+min2 [MIN Number]
 - read banner
-- 
+
 ![Pic](https://github.com/Muhmmad-Almuhmmah/SimpleQcnParser/raw/main/pngs/1.png)
 
 ![Pic](https://github.com/Muhmmad-Almuhmmah/SimpleQcnParser/raw/main/pngs/2.png)
@@ -18,9 +18,3 @@ What's new in v1.0.2
 ![Pic](https://github.com/Muhmmad-Almuhmmah/SimpleQcnParser/raw/main/pngs/3.png)
 
 ![Pic](https://github.com/Muhmmad-Almuhmmah/SimpleQcnParser/raw/main/pngs/4.png)
-
-![Pic](https://github.com/Muhmmad-Almuhmmah/SimpleQcnParser/raw/main/pngs/6.png)
-
-![Pic](https://github.com/Muhmmad-Almuhmmah/SimpleQcnParser/raw/main/pngs/7.png)
-
-![Pic](https://github.com/Muhmmad-Almuhmmah/SimpleQcnParser/raw/main/pngs/8.png)
